@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azdo-config
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- range $key, $val := .Values.env }}
+  {{ $key }}: "{{ $val }}"
+  {{- end}}

@@ -1,0 +1,48 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    chart: {{ .Chart.Name }}
+    version: {{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: AZP_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: azdo-secret
+                key: azdoToken
+          - name: AZP_URL
+            valueFrom:
+              configMapKeyRef:
+                name: azdo-config
+                key: azdoUrl
+          - name: AZP_POOL
+            valueFrom:
+              configMapKeyRef:
+                name: azdo-config
+                key: azdoPool
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "cat /azp/agent/_diag/Agent_*.log | grep \"Listening for Jobs\""
+          initialDelaySeconds: 15
+          periodSeconds: 5

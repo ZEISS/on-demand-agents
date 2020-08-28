@@ -1,0 +1,5 @@
+apiVersion: v2
+name: azdo-demand-agent
+description: A Helm chart for On Demand Agents - Demand agent
+type: application
+version: 0.1.0

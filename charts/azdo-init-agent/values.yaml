@@ -1,0 +1,11 @@
+replicas: 1
+
+namespace: project-foo
+env:
+  azdoUrl: https://dev.azure.com/foo
+  azdoPool: project-foo
+
+image:
+  repository: cizi/init-agent
+  tag: latest
+  pullPolicy: Always

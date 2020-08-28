@@ -1,0 +1,51 @@
+trigger:
+  - main
+  
+variables:
+  agentPool: 'project-foo'
+  agentType: 'nodejs'
+
+stages:
+
+- stage: SpinUpAgent
+  pool:
+      name: $(agentPool)
+      demands:
+      - category -equals init
+  jobs: 
+  - job: SpinupAgent
+    displayName: Spining up Agent
+
+    steps:
+    - checkout: none
+    - script: |
+        helm repo update
+        helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set image.type=$(agentType) zeiss/azdo-demand-agent
+      displayName: "Create an Agent- HELM"
+    
+- stage: Build
+  pool:
+      name: $(agentPool)
+      demands:
+      - Agent.Name -equals $(agentType)-$(Build.BuildId)
+  jobs:
+  - job: NodeJSBuild
+    steps:
+    - script: |
+        npm run install
+        npm run build
+      displayName: 'npm install and build'
+
+
+- stage: DeleteAgent
+  pool:
+      name: $(agentPool)
+      demands:
+      - category -equals init
+  jobs:
+    - job: NodeJSBuild
+      steps:
+      - checkout: none
+      - script: |
+          helm uninstall --namespace $(agentPool) $(agentType)-$(Build.BuildId)
+        displayName: "Delete an Agent - HELM"

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    chart: {{ .Chart.Name }}
+    version: {{ .Chart.Version }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  containers:
+    - name: {{ .Release.Name }}
+      image: "{{ .Values.agent.repository }}:{{ .Values.agent.type }}"
+      imagePullPolicy: {{ .Values.agent.pullPolicy }}
+      env:
+        - name: AZP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: azdo-secret
+              key: azdoToken
+        - name: AZP_URL
+          valueFrom:
+            configMapKeyRef:
+              name: azdo-config
+              key: azdoUrl
+        - name: AZP_POOL
+          valueFrom:
+            configMapKeyRef:
+              name: azdo-config
+              key: azdoPool
+      readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "cat /azp/agent/_diag/Agent_*.log | grep \"Listening for Jobs\""
+          initialDelaySeconds: 15
+          periodSeconds: 5

@@ -1,0 +1,6 @@
+# Azure DevOps baseimage (../Dockerfile-baseimage)
+# More info: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#create-and-build-the-dockerfile-1
+FROM azdo-agent:latest
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+    apt-get install -y nodejs

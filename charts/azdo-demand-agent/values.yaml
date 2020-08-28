@@ -1,0 +1,5 @@
+namespace: project-foo
+agent:
+  repository: cizi/demand-agent
+  type: nodejs
+  pullPolicy: Always
