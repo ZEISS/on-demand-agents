@@ -20,7 +20,7 @@ stages:
     - checkout: none
     - script: |
         helm repo update
-        helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set image.type=$(agentType) zeiss/azdo-demand-agent
+        helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) zeiss/azdo-demand-agent
       displayName: "Create an Agent- HELM"
     
 - stage: Build
